@@ -67,7 +67,7 @@ Current state is: RUNNING
 Guestshell enabled successfully
 ```
 
-![](./image3.png)
+![](imgs/image3.png)
 
 Step 5. Enter the guestshell CLI. This guestshell container can access the device bootflash directly.
 
@@ -152,7 +152,7 @@ Step 10. Now we will import the **clip** function from CLI module and test sendi
 >>> **cli.clip('show version')**
 ```
 
-![](./image4.png)
+![](imgs/image4.png)
 
 ```
 Cisco IOS XE Software, Version 16.12.01
@@ -193,7 +193,7 @@ Step 12. Verify the interface **loopback 99** has been created by using the **cl
 >>> **cli.clip('show ip interface brief | e unset')**
 ```
 
-![](./image5.png) 
+![](imgs/image5.png) 
 
 Step 13. Exit the interactive shell by executing **quit()**  and exit Guesthshell to return to the IOS CLI by typing exit to exit from the Bash prompt
 
