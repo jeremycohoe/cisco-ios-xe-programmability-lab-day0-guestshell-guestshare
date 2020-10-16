@@ -110,7 +110,6 @@ app-hosting appid guestshell
 interface AppGigabitEthernet1/0/1
  switchport mode trunk
 end
-exit
 ```
 
 ![](imgs/enablegs.png)
@@ -174,6 +173,14 @@ downloaded_script.py
 ```
 
 In the example above, the bootflash folder is empty except for the one shared folder: guest-share
+
+```
+[guestshell@guestshell ~]$ python3 --version
+Python 3.6.8
+[guestshell@guestshell ~]$
+```
+
+In the example above we show that Python3 is installed.
 
 Step 6.  Exit the guestshell by sending exit command and returning to the IOS XE CLI
 
