@@ -20,7 +20,7 @@ In this section we will look at IOS XE's on-box Linux container and its capabili
 
 Guestshell Python runs in an LXC container. This container is managed by IOX, which is a container manager specifically for IOS XE which is similar in function to Docker. Before using the guestshell, we must enable IOX and then enable guestshell.
 
-Step 1.  Connect to the C9300 switch
+Step 1.  Connect to the C9300 switch using terminal
 
 Step 2.  Enter the following command to check and enable **IOX** on the
 device
