@@ -20,7 +20,7 @@ In this section we will look at IOS XE's on-box Linux container and its capabili
 
 Guestshell Python runs in an LXC container. This container is managed by IOX, which is a container manager specifically for IOS XE which is similar in function to Docker. Before using the guestshell, we must enable IOX and then enable guestshell.
 
-Step 1.  Connect to the C9300 switch using terminal
+Step 1.  Login to the RDP from the POD access sheet provided by the proctor and connect to the C9300 switch using terminal
 
 ```
 auto@programmability:~$ ssh admin@10.1.1.5
@@ -56,7 +56,7 @@ C9300(config)# no iox
 C9300(config)# iox
 ```
 
-The **show iox-service** and the **show app-hosting list** is seen below, as well as the running configuration for the guest-shell section. This configuration may not yet be present in your switch, and can be added in the next section if needed.
+The **show iox-service** and the **show app-hosting list** is seen below, as well as the running configuration for the guest-shell section. This configuration may not yet be present in your switch, and can be added in Step3. **show app-hosting list** command may take up to 30 seconds to execute.
 
 ![](imgs/showiox.png)
 
@@ -137,6 +137,18 @@ C9300#guestshell
 
 [guestshell@guestshell ~]$
 
+```
+Note: if you get any "iox feature is not enabled" error like below then do "no iox" and "iox" in the configuration mode.
+
+```
+C9300#guestshell enable 
+ iox feature is not enabled
+C9300# 
+C9300#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+C9300(config)#no iox
+C9300(config)#iox
+C9300(config)#end
 ```
 
 ![](./imgs/enableenterls.png)
