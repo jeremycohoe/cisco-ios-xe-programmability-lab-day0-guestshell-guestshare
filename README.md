@@ -20,185 +20,163 @@ In this section we will look at IOS XE's on-box Linux container and its capabili
 
 Guestshell Python runs in an LXC container. This container is managed by IOX, which is a container manager specifically for IOS XE which is similar in function to Docker. Before using the guestshell, we must enable IOX and then enable guestshell.
 
-Step 1.  Open a SSH session to your C9300 switch
+Step 1.  Connect to the C9300 switch
 
 Step 2.  Enter the following command to check and enable **IOX** on the
 device
 
 ```
 C9300# show iox-service
+
+IOx Infrastructure Summary:
+---------------------------
+IOx service (CAF)              : Running
+IOx service (HA)               : Running
+IOx service (IOxman)           : Running
+IOx service (Sec storage)      : Not Running
+Libvirtd 5.5.0                 : Running
+Dockerd 18.03.0                : Running
+Application DB Sync Info       : Available
+Sync Status                    : Disabled
 ```
 
-All 5 services should be in "Runnning" state, if not, start IOX:
+If the IOX services are not in the correct state as per above then the IOX service can be restarted by ending the "no iox, iox" CLI commands if needed:
 
 ```
 C9300#conf t
 Enter configuration commands, one per line. End with CNTL/Z.
+C9300(config)# no iox
+...
 C9300(config)# iox
 ```
 
-If required to restart IOX, simply issue the **no iox** command
+The **show iox-service** and the **show app-hosting list** is seen below, as well as the running configuration for the guest-shell section. This configuration may not yet be present in your switch, and can be added in the next section if needed.
 
-Step 3. Configure guestshell interface with the following commands
+![](imgs/showiox.png)
 
-```
-c9300(config)# app-hosting appid guestshell
 
-c9300(config-app-hosting)# vnic management guest-interface 0 guest-ipaddress 10.1.1.7 netmask 255.255.255.0 gateway 10.1.1.5
+Additionally the **show app-hosting list** CLI can be used to show the state of the guestshell container:
 
-c9300(config-app-hosting)# end
-```
-
-Step 4.  Enable guestshell. Note that it takes IOX a minute or two to start. 
 
 ```
-c9300# guestshell enable
+C9300#show app-hosting list
+No App found
+
+or
+
+C9300#show app-hosting list
+App id                                   State
+---------------------------------------------------------
+guestshell                               RUNNING
+
+C9300#
+```
+
+
+Step 3. Configure and enable guestshell with the following commands:
+
+```
+C9300#
+
+conf t
+ip nat inside source list NAT_ACL interface vlan 1 overload
+ip access-list standard NAT_ACL
+permit 192.168.0.0 0.0.255.255
+exit
+vlan 4094
+exit
+int vlan 4094
+ip address 192.168.2.1 255.255.255.0
+ip nat inside
+ip routing
+ip route 0.0.0.0 0.0.0.0 10.1.1.3
+
+app-hosting appid guestshell
+ app-vnic AppGigabitEthernet trunk
+  vlan 4094 guest-interface 0
+   guest-ipaddress 192.168.2.2 netmask 255.255.255.0
+ app-default-gateway 192.168.2.1 guest-interface 0
+ name-server0 128.107.212.175
+ name-server1 64.102.6.247
+
+ interface AppGigabitEthernet1/0/1
+ switchport mode trunk
+end
+
+exit
+```
+
+![](imgs/enablegs.png)
+
+Step 4.  Start the Guest Shell container to enter into the Bash shell by sending the **guestshell enable** followed by the **guestshell** CLI - Note that it may take up to 1 minute to enable and enter the container.
+
+```
+C9300#guestshell enable
+
+<< wait about 30 seconds >>
 
 Interface will be selected if configured in app-hosting
-
 Please wait for completion
-
-**< Wait one or two minutes >**
-
-Guestshell activated successfully
-Currate state is: ACTIVATED
+guestshell installed successfully
+Current state is: DEPLOYED
+guestshell activated successfully
+Current state is: ACTIVATED
 guestshell started successfully
 Current state is: RUNNING
 Guestshell enabled successfully
+
+C9300#guestshell
+
+<< wait about 1 minute >>
+
+[guestshell@guestshell ~]$
+
 ```
 
-![](imgs/image3.png)
+![](./imgs/enableenterls.png)
 
-Step 5. Enter the guestshell CLI. This guestshell container can access the device bootflash directly.
+Step 5. Enter the guestshell CLI. This guestshell container can access the device bootflash **guest-share** directory only.
 
 ```
 c9300# guestshell
 
+[guestshell@guestshell ~]$ df
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/loop11       991020  265963    675057  29% /
+tmpfs            3875564    9956   3865608   1% /cisco/cisco_cli
+tmpfs            3875564  138600   3736964   4% /cisco/.iosp_socket
+/dev/sdb3       11087104 4638656   5885248  45% /bootflash/guest-share
+tmpfs                 64       0        64   0% /sys/fs/cgroup
+devfs                 64       0        64   0% /dev
+/dev/loop10         1050      21       955   3% /data
+rootfs           3852604  115392   3737212   3% /local/local1/core_dir
+tmpfs            3875564       0   3875564   0% /dev/shm
+tmpfs            3875564    4144   3871420   1% /run
+none             3875564       8   3875556   1% /var/volatile
 [guestshell@guestshell ~]$
+[guestshell@guestshell ~]$
+[guestshell@guestshell ~]$ cd /bootflash/
+[guestshell@guestshell bootflash]$ ls
+guest-share
+[guestshell@guestshell bootflash]$ ls
+guest-share
+[guestshell@guestshell guest-share]$ ls
+downloaded_script.py
+
+[guestshell@guestshell guest-share]$
 ```
 
-Step 6. Navigate to the bootflash directory. This is located at the root of
-the guestshell filesystem.
+In the example above, the bootflash folder is empty except for the one shared folder: guest-share
+
+Step 6.  Exit the guestshell by sending exit command and returning to the IOS XE CLI
 
 ```
-[guestshell@guestshell ~]$ cd /bootflash
-```
-
-Step 7.  List the contents of the directory by using **ls** command
-
-```
-[guestshell@guestshell bootflash]$ **ls**
-
-20180523-195811_shrun cat9k_LATEST_20170917_050621.SSA.bin
-20180523-195917_shrun cat9k_iosxe.16.08.01a.SPA.bin
-20180523-200022_shrun core
-20180523-200043_shrun current_config_name
-20180523-200113_shrun dc_profile_dir
-CRDU dc_stats.txt
-NVRAM diff
-base-config gs_script
-```
-
-Step 8.  Exit the guestshell by sending exit command and returning to the IOS XE CLI
-
-```
-[guestshell@guestshell ~]$ **exit**
+[guestshell@guestshell ~]$ exit
 ```
 
 The guestshell environment is a typical Linux virtual machine -- it has all of the tools available, including Python, Bash, yum, vi, etc. There are many possibilities having this capabilities within the IOS XE networking device.
 
-Lets look at extending Guesthshell further with Python.
-
-## On-Box Interactive Python
-
-Just as we can on Ubuntu or Windows, we can run the interactive python shell on IOS XE. We can also make CLI calls from here.
-
-Step 1.  Run Python from the exec command line.
-
-```
-c9300#guestshell run python
-
-Python 2.7.5 (default, Jun 17 2014, 18:11:42)
-
-[GCC 4.8.2 20140120 (Red Hat 4.8.2-16)] on linux2
-
-Type "help", "copyright", "credits" or "license" for more
-information.
-
->>>
-
->>> print 'hello'
-
-hello
-```
-
-
-Step 9. Now we will import the **cli** module and test sending CLI to the device.
-
-```
->>> import cli
-
->>> cli.cli('show version')
-
-'\ Cisco IOS XE Software, Version 16.12.01\nCisco IOS Software [Gibraltar], Catalyst L3 Switch Software (CAT9K_IOSXE), Version 16.12.1, RELEASE SOFTWARE (fc4)\nTechnical Support: http://
-www.cisco.com/techsupport\nCopyright (c) 1986-2019 by Cisco Systems, Inc.\nCompiled Tue 30-Jul-19 19:26 by mcpre\nCisco IOS-XE software, Copyright (c) 2005-2019 by cisco Systems, Inc.\nAll rights reserved.
-```
-
-Step 10. Now we will import the **clip** function from CLI module and test sending CLI to the device. It will print in a stdout rather than returning it. **stdout**, also known as "standard output", is the file where a program writes its output data.
-
-```
->>> **from cli import clip**
-
->>> **cli.clip('show version')**
-```
-
-![](imgs/image4.png)
-
-```
-Cisco IOS XE Software, Version 16.12.01
-
-Cisco IOS Software [Gibraltar], Catalyst L3 Switch Software
-(CAT9K_IOSXE), Version 16.12.1, RELEASE SOFTWARE (fc4)
-
-Technical Support: http://www.cisco.com/techsupport
-
-Copyright (c) 1986-2019 by Cisco Systems, Inc.
-
-Compiled Tue 30-Jul-19 19:26 by mcpre
-
-Cisco IOS-XE software, Copyright (c) 2005-2019 by cisco Systems, Inc.
-
-All rights reserved. Certain components of Cisco IOS-XE software are
-
-licensed under the GNU General Public License ("GPL") Version 2.0. The
-
-software code licensed under GPL Version 2.0 is free software that
-comes...
-```
-
-Notice that the ouptut of the **clip** function is much easier to read
-than before.
-
-Step 11. **configure** is another function available in the **cli** module to
-provision the device. Create loopback 99 with ip address 99.99.99.99
-using the **configure** function as follows.
-
-```
-cli.configure(["interface loopback 99", "ip address 99.99.99.99 255.255.255.255", "end"])
-```
-
-Step 12. Verify the interface **loopback 99** has been created by using the **clip** function.
-
-```
->>> **cli.clip('show ip interface brief | e unset')**
-```
-
-![](imgs/image5.png) 
-
-Step 13. Exit the interactive shell by executing **quit()**  and exit Guesthshell to return to the IOS CLI by typing exit to exit from the Bash prompt
-
-**Note:** CLI is not the only option for communicating with the device. We can install NCClient, for example, and use NETCONF to communicate from the on-box script to the switch. We could use PIP to install additional python files and modules, as well as yum to install additional system packages.
 
 ## Conclusion
 
-In this module the Guestshell was configured, enabled, and the Python API was used to configure the IOS XE device. The example here is very basic, however, all IOS CLI functionality is available from the Python API within Guestshell, so there are many potential use cases that customers can implement as needed.
+In this module the Guestshell was configured, enabled, and the guest-shared folder was explored. 
