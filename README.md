@@ -106,11 +106,10 @@ app-hosting appid guestshell
  app-default-gateway 192.168.2.1 guest-interface 0
  name-server0 128.107.212.175
  name-server1 64.102.6.247
-
- interface AppGigabitEthernet1/0/1
+ exit
+interface AppGigabitEthernet1/0/1
  switchport mode trunk
 end
-
 exit
 ```
 
