@@ -22,6 +22,12 @@ Guestshell Python runs in an LXC container. This container is managed by IOX, wh
 
 Step 1.  Connect to the C9300 switch using terminal
 
+```
+auto@programmability:~$ ssh admin@10.1.1.5
+Password: Cisco123
+C9300# 
+```
+
 Step 2.  Enter the following command to check and enable **IOX** on the
 device
 
