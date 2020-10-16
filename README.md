@@ -3,7 +3,7 @@
 ## Module: Guestshell and Guest-share
 
 ## Topics Covered:
-Guestshell
+[Guestshell]
 
 Enable Guestshell
 
@@ -101,6 +101,8 @@ app-hosting appid guestshell
  app-vnic AppGigabitEthernet trunk
   vlan 4094 guest-interface 0
    guest-ipaddress 192.168.2.2 netmask 255.255.255.0
+   exit
+  exit
  app-default-gateway 192.168.2.1 guest-interface 0
  name-server0 128.107.212.175
  name-server1 64.102.6.247
