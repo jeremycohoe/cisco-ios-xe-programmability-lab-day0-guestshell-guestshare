@@ -3,13 +3,11 @@
 ## Module: Guestshell and Guest-share
 
 ## Topics Covered:
-Guestshell
+[Guestshell](#guestshell-with-guest-share)
 
-Enable Guestshell
+[Enable Guestshell](#enable-guestshell)
 
-Guest-Share shared folder
-
-Conclusion
+[Conclusion](#conclusion)
 
 
 ## Guestshell with Guest-share
@@ -101,15 +99,15 @@ app-hosting appid guestshell
  app-vnic AppGigabitEthernet trunk
   vlan 4094 guest-interface 0
    guest-ipaddress 192.168.2.2 netmask 255.255.255.0
+   exit
+  exit
  app-default-gateway 192.168.2.1 guest-interface 0
  name-server0 128.107.212.175
  name-server1 64.102.6.247
-
- interface AppGigabitEthernet1/0/1
+ exit
+interface AppGigabitEthernet1/0/1
  switchport mode trunk
 end
-
-exit
 ```
 
 ![](imgs/enablegs.png)
@@ -185,6 +183,14 @@ downloaded_script.py
 ```
 
 In the example above, the bootflash folder is empty except for the one shared folder: guest-share
+
+```
+[guestshell@guestshell ~]$ python3 --version
+Python 3.6.8
+[guestshell@guestshell ~]$
+```
+
+In the example above we show that Python3 is installed.
 
 Step 6.  Exit the guestshell by sending exit command and returning to the IOS XE CLI
 
