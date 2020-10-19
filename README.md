@@ -111,6 +111,8 @@ interface AppGigabitEthernet1/0/1
 end
 ```
 
+**NOTE** If you see errors with **ip nat** commands, they can be ignored - however please mention this to the proctor if seen in your envrionment.
+
 ![](imgs/enablegs.png)
 
 Step 4.  Start the Guest Shell container to enter into the Bash shell by sending the **guestshell enable** followed by the **guestshell** CLI - Note that it may take up to 1 minute to enable and enter the container.
