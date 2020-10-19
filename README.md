@@ -83,6 +83,7 @@ Step 3. Configure and enable guestshell with the following commands:
 C9300#
 
 conf t
+iox
 ip nat inside source list NAT_ACL interface vlan 1 overload
 ip access-list standard NAT_ACL
 permit 192.168.0.0 0.0.255.255
