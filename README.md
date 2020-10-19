@@ -111,7 +111,7 @@ interface AppGigabitEthernet1/0/1
 end
 ```
 
-**NOTE** If you see errors with **ip nat** commands, they can be ignored - however please mention this to the proctor if seen in your envrionment.
+**NOTE** If you see errors with **ip nat** commands then check the license level as DNA Advantage is required. Your switch has already been configured with the DNA Advantage license.
 
 ![](imgs/enablegs.png)
 
