@@ -2,14 +2,10 @@
 
 ## Module: Guestshell and Guest-share
 
-## Version: 17.6
-
 ## Topics Covered:
 [Guestshell](#guestshell-with-guest-share)
 
 [Enable Guestshell](#enable-guestshell)
-
-[Guestshell with NETCONF](#guestshell-with-NETCONF)
 
 [Conclusion](#conclusion)
 
@@ -143,6 +139,18 @@ C9300#guestshell
 [guestshell@guestshell ~]$
 
 ```
+Note: if you get any "iox feature is not enabled" error like below then do "no iox" and "iox" in the configuration mode.
+
+```
+C9300#guestshell enable 
+ iox feature is not enabled
+C9300# 
+C9300#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+C9300(config)#no iox
+C9300(config)#iox
+C9300(config)#end
+```
 
 ![](./imgs/enableenterls.png)
 
@@ -151,11 +159,33 @@ Step 5. Enter the guestshell CLI. This guestshell container can access the devic
 ```
 c9300# guestshell
 
-[guestshell@guestshell ~]$ 
+[guestshell@guestshell ~]$ df
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/loop11       991020  265963    675057  29% /
+tmpfs            3875564    9956   3865608   1% /cisco/cisco_cli
+tmpfs            3875564  138600   3736964   4% /cisco/.iosp_socket
+/dev/sdb3       11087104 4638656   5885248  45% /bootflash/guest-share
+tmpfs                 64       0        64   0% /sys/fs/cgroup
+devfs                 64       0        64   0% /dev
+/dev/loop10         1050      21       955   3% /data
+rootfs           3852604  115392   3737212   3% /local/local1/core_dir
+tmpfs            3875564       0   3875564   0% /dev/shm
+tmpfs            3875564    4144   3871420   1% /run
+none             3875564       8   3875556   1% /var/volatile
+[guestshell@guestshell ~]$
+[guestshell@guestshell ~]$
+[guestshell@guestshell ~]$ cd /bootflash/
+[guestshell@guestshell bootflash]$ ls
+guest-share
+[guestshell@guestshell bootflash]$ ls
+guest-share
+[guestshell@guestshell guest-share]$ ls
+downloaded_script.py
 
+[guestshell@guestshell guest-share]$
 ```
 
-You are now in the Guest Shell Linux container. Check the python version with **python3 --version** command
+In the example above, the bootflash folder is empty except for the one shared folder: guest-share
 
 ```
 [guestshell@guestshell ~]$ python3 --version
@@ -163,78 +193,17 @@ Python 3.6.8
 [guestshell@guestshell ~]$
 ```
 
-In the example above we show that Python3 is installed. Next use the NETCONF API.
+In the example above we show that Python3 is installed.
 
-
-
-## Guestshell with NETCONF
-
-The below python was generated from YANG Suite's NETCONF plugin. This payload is used to read the hostname from the Cisco-IOS-XE-native.YANG - this is the YANG data model where most of the IOS XE configuration is modelled. 
-
-This script has already been saved onto the Ubuntu VM in /tftpboot/get_hostname.py and is available from http://10.1.1.3/get_hostname.py or from tftp://10.1.1.3/get_hostname.py. From within the Guestshell copy this file from the Linux VM into the container with the curl command:
-
-**curl http://10.1.1.3/get_hostname.py -o ~/get_hostname.py**
+Step 6.  Exit the guestshell by sending exit command and returning to the IOS XE CLI
 
 ```
-from ncclient import manager
-import sys
-import xml.dom.minidom
-
-HOST = '127.0.0.1'
-# use the NETCONF port for your device
-PORT = 830
-# use the user credentials for your  device
-USER = 'admin'
-PASS = 'Cisco123'
-
-FILTER = '''
-                <filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-                  <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
-                    <hostname></hostname>
-                  </native>
-                </filter>
-            '''
-
-def main():
-    """
-    Main method that prints netconf capabilities of remote device.
-    """
-    # Create a NETCONF session to the router with ncclient
-    with manager.connect(host=HOST, port=PORT, username=USER,
-                         password=PASS, hostkey_verify=False,
-                         device_params={'name': 'default'},
-                         allow_agent=False, look_for_keys=False) as m:
-
-        # Retrieve the configuraiton
-        results = m.get_config('running', FILTER)
-        # Print the output in a readable format
-        print(xml.dom.minidom.parseString(results.xml).toprettyxml())
-
-
-if __name__ == '__main__':
-    sys.exit(main())
+[guestshell@guestshell ~]$ exit
 ```
 
-
-Run the python file with the following command: **python3 ~/get_hostname.py** 
-
-The output should be similar to the following where the hostname of C9300 is seen:
-
-```
-[guestshell@guestshell ~]$ python3 get_hostname.py
-<?xml version="1.0" ?>
-<rpc-reply message-id="urn:uuid:7e6042c3-4c32-4e27-bec3-7b8730607877" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0">
-	<data>
-		<native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
-			<hostname>C9300</hostname>
-		</native>
-	</data>
-</rpc-reply>
-```
-
-The aboce example shows that Guesthshell has made a connection to the localhost 127.0.0.1 on port 830 which is connected to IOS XE's netconf interface for management and operation data use cases.
+The guestshell environment is a typical Linux virtual machine -- it has all of the tools available, including Python, Bash, yum, vi, etc. There are many possibilities having this capabilities within the IOS XE networking device.
 
 
 ## Conclusion
 
-In this module the Guestshell was configured, enabled, and the NETCONF API was used to interact with IOS XE from the Guestshell using NETCONF payloads.
+In this module the Guestshell was configured, enabled, and the guest-shared folder was explored. 
