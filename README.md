@@ -232,7 +232,7 @@ The output should be similar to the following where the hostname of C9300 is see
 </rpc-reply>
 ```
 
-The aboce example shows that Guesthshell has made a connection to the localhost 127.0.0.1 on port 830 which is connected to IOS XE's netconf interface for management and operation data use cases.
+The above example shows that Guesthshell has made a connection to the localhost 127.0.0.1 on port 830 which is connected to IOS XE's netconf interface for management and operation data use cases.
 
 
 ## Conclusion
