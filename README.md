@@ -1,11 +1,11 @@
 ## [IOS XE Programmability Lab](https://github.com/jeremycohoe/cisco-ios-xe-programmability-lab)
 
-## Module: Guestshell and Guest-share
+## Module: Guestshell and NETCONF
 
 ## Version: 17.6
 
 ## Topics Covered:
-[Guestshell](#guestshell-with-guest-share)
+[Guestshell](#guestshell)
 
 [Enable Guestshell](#enable-guestshell)
 
@@ -14,9 +14,9 @@
 [Conclusion](#conclusion)
 
 
-## Guestshell with Guest-share
+## Guestshell
 
-In this section we will look at IOS XE's on-box Linux container and its capabilities. We will see how to enable it, how to use it to run Python scripts, and how to integrate it with EEM.
+In this section we will look at IOS XE's on-box Linux container and its capabilities. We will see how to enable it, how to use it to run Python scripts, and how to integrate it NETCONF API
 
 ## Enable Guestshell
 
