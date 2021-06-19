@@ -16,7 +16,7 @@
 
 ## Guestshell
 
-In this section we will look at IOS XE's on-box Linux container and its capabilities. We will see how to enable it, how to use it to run Python scripts, and how to integrate it NETCONF API
+In this section we will look at Guestshell: IOS XE's on-box Linux container and its capabilities. We will see how to enable it, how to use it to run Python scripts, and how to integrate it with the NETCONF API
 
 ## Enable Guestshell
 
@@ -59,9 +59,6 @@ C9300(config)# iox
 ```
 
 The **show iox-service** and the **show app-hosting list** is seen below, as well as the running configuration for the guest-shell section. This configuration may not yet be present in your switch, and can be added in Step3. **show app-hosting list** command may take up to 30 seconds to execute.
-
-![](imgs/showiox.png)
-
 
 Additionally the **show app-hosting list** CLI can be used to show the state of the guestshell container:
 
@@ -115,6 +112,8 @@ interface AppGigabitEthernet1/0/1
 end
 ```
 
+![](imgs/showiox.png)
+
 **NOTE** If you see errors with **ip nat** commands then check the license level as DNA Advantage is required. Your switch has already been configured with the DNA Advantage license.
 
 ![](imgs/enablegs.png)
@@ -145,8 +144,6 @@ C9300#guestshell
 ```
 
 ![](./imgs/enableenterls.png)
-
-Step 5. Enter the guestshell CLI. This guestshell container can access the device bootflash **guest-share** directory only.
 
 ```
 c9300# guestshell
