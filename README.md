@@ -235,3 +235,7 @@ The above example shows that Guesthshell has made a connection to the localhost 
 ## Conclusion
 
 In this module the Guestshell was configured, enabled, and the NETCONF API was used to interact with IOS XE from the Guestshell using NETCONF payloads.
+
+Please mark this module complete in the following SmartSheet form and be sure to include your name, e-mail ID, and pod #
+
+https://app.smartsheet.com/b/form/134240eac2d84a57acd4efc24fd8f3d0
